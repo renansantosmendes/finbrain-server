@@ -10,15 +10,20 @@ from fastapi.responses import RedirectResponse
 from finbrain_server import __version__
 from finbrain_server.infrastructure.config import Settings, get_settings
 from finbrain_server.presentation.api.error_handlers import register_error_handlers
+# Import routers; import macro_global lazily to tolerate its removal
 from finbrain_server.presentation.api.routers import (
     assets,
     crypto,
     dashboard,
     macro_brasil,
-    macro_global,
     simulations,
     system,
 )
+try:
+    from finbrain_server.presentation.api.routers import macro_global
+except Exception:
+    macro_global = None
+
 
 API_PREFIX = "/api/v1"
 
@@ -120,8 +125,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             allow_headers=["Content-Type"],
         )
     register_error_handlers(app)
-    for module in (dashboard, assets, macro_brasil, macro_global, crypto, simulations, system):
+    for module in (dashboard, assets, macro_brasil, simulations, system, crypto):
         app.include_router(module.router, prefix=API_PREFIX)
+    # include macro_global if available
+    if macro_global is not None:
+        app.include_router(macro_global.router, prefix=API_PREFIX)
+
 
     @app.get("/", include_in_schema=False)
     def redirect_to_docs() -> RedirectResponse:
