@@ -38,7 +38,6 @@ capabilities as the finbrain-mcp tools, for the FinBrain front end.
 |------|--------|
 | Stocks, indices, currencies | Yahoo Finance (`yfinance`) |
 | Selic, CDI, IPCA, PTAX, Focus | Central Bank of Brazil (`python-bcb`) |
-| Global indicators | World Bank Open Data (`wbdata`) |
 | Crypto | Public APIs of exchanges (`ccxt`) |
 | Simulations | GARCH(1,1) fitted with `arch` |
 
@@ -49,7 +48,7 @@ Tickers follow Yahoo Finance: `PETR4.SA` (B3), `AAPL` (US), `^BVSP`
 
 Every answer from a data source is cached in memory with a time to live per
 kind of data (quotes 1 min, candles 15 min, company data and macro 6 h,
-World Bank 24 h, crypto 5 to 60 s, simulations 1 h). Successful `GET`
+crypto 5 to 60 s, simulations 1 h). Successful `GET`
 answers also carry `Cache-Control` so browsers and the CDN can reuse them.
 `GET /api/v1/cache/stats` shows the cache counters.
 
