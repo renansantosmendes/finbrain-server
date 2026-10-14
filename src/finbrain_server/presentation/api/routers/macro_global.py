@@ -16,6 +16,10 @@ from finbrain_server.presentation.api.schemas import (
 
 router = APIRouter(prefix="/macro/global", tags=["Macro global"])
 
+# Backwards compatibility: placeholder Service type in case older deployments reference it
+Service = object
+
+
 # Service = Annotated[WorldBankService, Depends(get_world_bank_service)]
 IndicatorCode = Annotated[
     str,
