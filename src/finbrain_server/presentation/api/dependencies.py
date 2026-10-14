@@ -7,7 +7,6 @@ from fastapi import Response
 
 from finbrain_server.application.crypto import CryptoService
 from finbrain_server.application.macro_brasil import BrazilMacroService
-from finbrain_server.application.macro_global import WorldBankService
 from finbrain_server.application.market import MarketDataService
 from finbrain_server.application.ports import Cache
 from finbrain_server.application.simulations import SimulationService
