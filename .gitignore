@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-node_modules/
-.vercel/
-.DS_Store
-Thumbs.db
-=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -224,4 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
->>>>>>> ab8bf8b (add files)
+
+node_modules/
+.vercel/
+.DS_Store
+Thumbs.db
