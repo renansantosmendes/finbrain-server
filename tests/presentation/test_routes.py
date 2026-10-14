@@ -1,6 +1,7 @@
 """Tests of the HTTP API with services wired to fakes."""
 
 import pytest
+from fastapi.testclient import TestClient
 
 
 def test_health_docs_and_root_redirect(client):
@@ -8,7 +9,7 @@ def test_health_docs_and_root_redirect(client):
     assert client.get("/", follow_redirects=False).headers["location"] == "/docs"
     paths = client.get("/openapi.json").json()["paths"]
     assert "/api/v1/dashboard" in paths and "/api/v1/simulations/garch/asset" in paths
-    assert len(paths) == 22
+    assert len(paths) == 21
 
 
 def test_dashboard_returns_assets_and_macro(client):
@@ -90,16 +91,26 @@ def test_macro_brasil_routes(client):
     assert focus[0]["respondents"] == 144
 
 
-def test_macro_global_routes(client):
-    found = client.get("/api/v1/macro/global/indicators", params={"query": "inflation"}).json()
-    assert found[0]["code"] == "FP.CPI.TOTL.ZG"
+def test_macro_global_routes_are_disabled(client):
     values = client.get(
         "/api/v1/macro/global/indicators/FP.CPI.TOTL.ZG",
         params={"countries": "BRA,USA", "start_year": 2020, "end_year": 2023},
-    ).json()
-    assert len(values) == 4
-    latest = client.get("/api/v1/macro/global/indicators/NY.GDP.PCAP.CD/latest", params={"countries": "BRA,USA"}).json()
-    assert [item["country"] for item in latest] == ["USA", "BRA"]
+    )
+    assert values.status_code == 404
+    latest = client.get("/api/v1/macro/global/indicators/NY.GDP.PCAP.CD/latest", params={"countries": "BRA,USA"})
+    assert latest.status_code == 404
+
+
+def test_vercel_rewrite_restores_the_original_path():
+    from api.index import app as vercel_app
+
+    with TestClient(vercel_app) as vercel_client:
+        health = vercel_client.get("/api/index.py", params={"__vercel_path": "api/v1/health"})
+        assert health.status_code == 200 and health.json()["status"] == "ok"
+        docs = vercel_client.get("/api/index.py", params={"__vercel_path": "docs"})
+        assert docs.status_code == 200 and "swagger" in docs.text.lower()
+        root = vercel_client.get("/api/index.py", params={"__vercel_path": ""}, follow_redirects=False)
+        assert root.status_code == 307 and root.headers["location"] == "/docs"
 
 
 def test_crypto_routes(client):

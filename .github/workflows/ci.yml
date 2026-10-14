@@ -1,8 +1,8 @@
 name: CI
 
-# Runs the full test suite on every pull request and on every push to main.
-# Make the "Testes (Node 22)" check required in the branch protection rules
-# of main, so nothing is merged without passing it.
+# Runs the backend test suite (pytest) on every pull request and on every
+# push to main. Make the "Tests (Python 3.12)" check required in the branch
+# protection rules of main, so nothing is merged without passing it.
 on:
   pull_request:
   push:
@@ -18,24 +18,26 @@ permissions:
 
 jobs:
   test:
-    name: Testes (Node ${{ matrix.node }})
+    name: Tests (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        node: ["20", "22"]
+        python: ["3.12"]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
+      - name: Set up uv and Python ${{ matrix.python }}
+        uses: astral-sh/setup-uv@v6
         with:
-          node-version: ${{ matrix.node }}
-          cache: npm
+          python-version: ${{ matrix.python }}
+          activate-environment: true
+          enable-cache: true
+          cache-dependency-glob: requirements*.txt
 
       - name: Install dependencies
-        run: npm ci
+        run: uv pip install -r requirements-dev.txt
 
-      - name: Run every test
-        run: npm test
+      - name: Run the tests
+        run: python -m pytest -q

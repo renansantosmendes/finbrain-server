@@ -104,7 +104,6 @@ def client(
         dependencies.get_cache: lambda: cache,
         dependencies.get_market_service: lambda: market_service,
         dependencies.get_macro_brasil_service: lambda: macro_service,
-        dependencies.get_world_bank_service: lambda: world_bank_service,
         dependencies.get_crypto_service: lambda: crypto_service,
         dependencies.get_simulation_service: lambda: simulation_service,
         dependencies.get_default_watchlist: lambda: "PETR4.SA,^BVSP",

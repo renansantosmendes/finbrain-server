@@ -21,9 +21,6 @@ from finbrain_server.infrastructure.cache.memory_cache import InMemoryTtlCache
 from finbrain_server.infrastructure.config import Settings
 from finbrain_server.infrastructure.providers.bcb_provider import BcbMacroProvider
 from finbrain_server.infrastructure.providers.ccxt_provider import CcxtCryptoProvider
-from finbrain_server.infrastructure.providers.world_bank_provider import (
-    WbdataWorldBankProvider,
-)
 from finbrain_server.infrastructure.providers.yfinance_provider import (
     YFinanceMarketDataProvider,
 )
@@ -250,41 +247,6 @@ def test_bcb_errors_are_translated():
     ):
         with pytest.raises(UpstreamUnavailableError):
             call()
-
-
-def test_world_bank_adapter():
-    rows = [
-        {"countryiso3code": "BRA", "date": "2023", "value": 4.59},
-        {"countryiso3code": "", "country": {"id": "US"}, "date": "2023", "value": 4.1},
-        {"countryiso3code": "BRA", "date": "2022", "value": None},
-    ]
-    calls = []
-    client = SimpleNamespace(
-        get_indicators=lambda query: [{"id": "FP.CPI.TOTL.ZG", "name": "Inflation"}] * 3,
-        get_data=lambda code, **options: calls.append(options) or rows,
-    )
-    provider = WbdataWorldBankProvider(client)
-    assert len(provider.search_indicators("inflation", 2)) == 2
-    values = provider.get_indicator("FP.CPI.TOTL.ZG", ["BRA", "USA"], 2020, 2023)
-    assert [(item.country, item.value) for item in values] == [("BRA", 4.59), ("US", 4.1)]
-    assert calls[0] == {"country": ["BRA", "USA"], "date": ("2020", "2023")}
-    provider.get_indicator("FP.CPI.TOTL.ZG", ["BRA"], None, None)
-    assert calls[1] == {"country": ["BRA"]}
-
-
-def test_world_bank_errors_are_translated():
-    def invalid(*args, **kwargs):
-        raise RuntimeError("The indicator was not found")
-
-    def down(*args, **kwargs):
-        raise ConnectionError("timeout")
-
-    with pytest.raises(SeriesNotFoundError):
-        WbdataWorldBankProvider(SimpleNamespace(get_data=invalid)).get_indicator("X.Y", ["BRA"], None, None)
-    with pytest.raises(UpstreamUnavailableError):
-        WbdataWorldBankProvider(SimpleNamespace(get_data=down)).get_indicator("X.Y", ["BRA"], None, None)
-    with pytest.raises(UpstreamUnavailableError):
-        WbdataWorldBankProvider(SimpleNamespace(get_indicators=down)).search_indicators("x", 5)
 
 
 class BadSymbol(Exception):
