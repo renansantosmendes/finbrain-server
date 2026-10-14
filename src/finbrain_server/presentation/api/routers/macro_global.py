@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Path, Query
 from finbrain_server.application.macro_global import WorldBankService
 from finbrain_server.presentation.api.dependencies import (
     cache_for,
-    get_world_bank_service,
+    # get_world_bank_service (removed)
 )
 from finbrain_server.presentation.api.error_handlers import INVALID, UPSTREAM, error_doc
 from finbrain_server.presentation.api.schemas import (
@@ -17,7 +17,7 @@ from finbrain_server.presentation.api.schemas import (
 
 router = APIRouter(prefix="/macro/global", tags=["Macro global"])
 
-Service = Annotated[WorldBankService, Depends(get_world_bank_service)]
+# Service = Annotated[WorldBankService, Depends(get_world_bank_service)]
 IndicatorCode = Annotated[
     str,
     Path(
@@ -34,15 +34,15 @@ Countries = Annotated[
 NOT_FOUND = {404: error_doc("Unknown indicator (`series_not_found`).")}
 
 
-@router.get(
-    "/indicators",
-    summary="Search World Bank indicators",
-    description="Indicators whose name matches a keyword, with their codes. "
-    "Same purpose as the finbrain-mcp tool `search_world_bank_indicator`.",
-    response_description="Matching indicators.",
-    responses={**INVALID, **UPSTREAM},
-    dependencies=[Depends(cache_for(86400))],
-)
+# @router.get(
+#     "/indicators",
+#     summary="Search World Bank indicators",
+#     description="Indicators whose name matches a keyword, with their codes. "
+#     "Same purpose as the finbrain-mcp tool `search_world_bank_indicator`.",
+#     response_description="Matching indicators.",
+#     responses={**INVALID, **UPSTREAM},
+#     dependencies=[Depends(cache_for(86400))],
+# )
 def search_indicators(
     service: Service,
     query: Annotated[str, Query(description="Keyword.", examples=["inflation"])],
