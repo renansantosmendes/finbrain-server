@@ -187,6 +187,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "raw_path": (request.scope.get("raw_path") or b"").decode(),
                 "root_path": request.scope.get("root_path"),
                 "url": str(request.url),
+                "headers": {
+                    key: value
+                    for key, value in request.headers.items()
+                    if key.startswith("x-")
+                    and "auth" not in key
+                    and "token" not in key
+                    and "signature" not in key
+                },
             },
         )
 
