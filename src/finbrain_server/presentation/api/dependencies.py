@@ -15,9 +15,7 @@ from finbrain_server.infrastructure.cache.memory_cache import InMemoryTtlCache
 from finbrain_server.infrastructure.config import get_settings
 from finbrain_server.infrastructure.providers.bcb_provider import BcbMacroProvider
 from finbrain_server.infrastructure.providers.ccxt_provider import CcxtCryptoProvider
-from finbrain_server.infrastructure.providers.world_bank_provider import (
-    WbdataWorldBankProvider,
-)
+
 from finbrain_server.infrastructure.providers.yfinance_provider import (
     YFinanceMarketDataProvider,
 )
@@ -63,20 +61,6 @@ def get_macro_brasil_service() -> BrazilMacroService:
     """
     return BrazilMacroService(
         BcbMacroProvider(), get_cache(), get_settings().cache_policy
-    )
-
-
-@lru_cache
-def get_world_bank_service() -> WorldBankService:
-    """Global macro service backed by the World Bank API.
-
-    Returns
-    -------
-    WorldBankService
-        Shared service.
-    """
-    return WorldBankService(
-        WbdataWorldBankProvider(), get_cache(), get_settings().cache_policy
     )
 
 
