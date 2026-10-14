@@ -156,4 +156,38 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logging.info("/__ping invoked")
         return {"status": "ok", "message": "ping"}
 
+    from fastapi import Request
+    from fastapi.responses import JSONResponse
+
+    @app.api_route(
+        "/{unmatched_path:path}",
+        methods=["GET", "POST"],
+        include_in_schema=False,
+    )
+    def _debug_unmatched(request: Request, unmatched_path: str) -> JSONResponse:
+        """Temporary diagnostic: report the path the app received.
+
+        Parameters
+        ----------
+        request : Request
+            Incoming request.
+        unmatched_path : str
+            Path that matched no other route.
+
+        Returns
+        -------
+        JSONResponse
+            404 with the ASGI path and root path.
+        """
+        return JSONResponse(
+            status_code=404,
+            content={
+                "debug": "unmatched",
+                "path": request.scope.get("path"),
+                "raw_path": (request.scope.get("raw_path") or b"").decode(),
+                "root_path": request.scope.get("root_path"),
+                "url": str(request.url),
+            },
+        )
+
     return app
