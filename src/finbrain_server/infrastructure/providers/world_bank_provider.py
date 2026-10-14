@@ -13,6 +13,9 @@ from finbrain_server.domain.exceptions import (
 )
 
 
+import os
+import tempfile
+
 class WbdataWorldBankProvider(WorldBankProvider):
     """Reads World Bank indicators.
 
