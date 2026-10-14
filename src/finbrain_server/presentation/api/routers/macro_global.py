@@ -4,11 +4,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, Query
 
-from finbrain_server.application.macro_global import WorldBankService
+from fastapi import HTTPException
 from finbrain_server.presentation.api.dependencies import (
     cache_for,
-    # get_world_bank_service (removed)
-)
+)  # World Bank endpoints removed
 from finbrain_server.presentation.api.error_handlers import INVALID, UPSTREAM, error_doc
 from finbrain_server.presentation.api.schemas import (
     CountryValueSchema,
@@ -44,7 +43,6 @@ NOT_FOUND = {404: error_doc("Unknown indicator (`series_not_found`).")}
 #     dependencies=[Depends(cache_for(86400))],
 # )
 def search_indicators(
-    service: Service,
     query: Annotated[str, Query(description="Keyword.", examples=["inflation"])],
     limit: Annotated[int, Query(description="Maximum results (1 to 50).")] = 15,
 ) -> list[IndicatorInfoSchema]:
@@ -64,7 +62,7 @@ def search_indicators(
     list[IndicatorInfoSchema]
         Matching indicators.
     """
-    return [IndicatorInfoSchema.build(item) for item in service.search_indicators(query, limit)]
+    raise HTTPException(status_code=404, detail="World Bank endpoints are disabled in this deployment")
 
 
 @router.get(
@@ -77,7 +75,6 @@ def search_indicators(
     dependencies=[Depends(cache_for(86400))],
 )
 def get_indicator(
-    service: Service,
     code: IndicatorCode,
     countries: Countries,
     start_year: Annotated[int, Query(description="First year.", examples=[2015])],
@@ -103,8 +100,7 @@ def get_indicator(
     list[CountryValueSchema]
         Values by country and year.
     """
-    values = service.get_indicator(code, countries, start_year, end_year)
-    return [CountryValueSchema.build(item) for item in values]
+    raise HTTPException(status_code=404, detail="World Bank endpoints are disabled in this deployment")
 
 
 @router.get(
@@ -118,7 +114,6 @@ def get_indicator(
     dependencies=[Depends(cache_for(86400))],
 )
 def compare_countries_latest(
-    service: Service,
     code: IndicatorCode,
     countries: Countries,
 ) -> list[CountryValueSchema]:
@@ -138,5 +133,4 @@ def compare_countries_latest(
     list[CountryValueSchema]
         Ranked values.
     """
-    values = service.compare_countries_latest(code, countries)
-    return [CountryValueSchema.build(item) for item in values]
+    raise HTTPException(status_code=404, detail="World Bank endpoints are disabled in this deployment")
