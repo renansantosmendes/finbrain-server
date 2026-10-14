@@ -3,6 +3,8 @@
 import math
 from typing import Any
 
+from wbdata import Client
+
 import wbdata
 
 from finbrain_server.application.ports import WorldBankProvider
@@ -17,6 +19,13 @@ import os
 import tempfile
 
 class WbdataWorldBankProvider(WorldBankProvider):
+    def __init__(self, client: Any | None = None) -> None:
+        # Disable cache by setting cache=None in the Client
+        if client is None:
+            client = Client(cache=None)
+        self._client = client
+
+
     """Reads World Bank indicators.
 
     Parameters
