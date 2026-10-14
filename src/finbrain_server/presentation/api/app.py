@@ -143,4 +143,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         """
         return RedirectResponse(url="/docs")
 
+    # Health / debug endpoint reachable without docs UI; helps verify function invocation on Vercel
+    @app.get("/__ping", include_in_schema=False)
+    def _ping() -> dict:
+        """Minimal endpoint to verify the function is running and reachable.
+
+        Returns
+        -------
+        dict
+            Simple status map.
+        """
+        logging.info("/__ping invoked")
+        return {"status": "ok", "message": "ping"}
+
     return app
