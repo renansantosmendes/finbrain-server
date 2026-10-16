@@ -15,7 +15,9 @@ class CachePolicy:
     quote : float
         Current quotes.
     history : float
-        Candles (also the input of indicators, dashboard and GARCH).
+        Daily and longer candles (also the input of indicators, dashboard and GARCH).
+    intraday_history : float
+        Intraday candles (1 minute to 1 hour), refreshed while the market is open.
     fundamentals : float
         Company indicators.
     macro : float
@@ -36,6 +38,7 @@ class CachePolicy:
 
     quote: float = 60
     history: float = 900
+    intraday_history: float = 60
     fundamentals: float = 21600
     macro: float = 21600
     world_bank: float = 86400

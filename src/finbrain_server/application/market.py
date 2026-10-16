@@ -16,6 +16,7 @@ from finbrain_server.domain.entities import (
 from finbrain_server.domain.exceptions import AssetNotFoundError, DomainError
 from finbrain_server.domain.validation import (
     INTERVALS,
+    INTRADAY_INTERVALS,
     PERIODS,
     ensure_choice,
     normalize_ticker,
@@ -112,9 +113,8 @@ class MarketDataService:
                 raise AssetNotFoundError(f"No price data for ticker '{symbol}'.")
             return history
 
-        return self._cache.get_or_load(
-            f"history:{symbol}:{period}:{interval}", self._policy.history, load
-        )
+        ttl = self._policy.intraday_history if interval in INTRADAY_INTERVALS else self._policy.history
+        return self._cache.get_or_load(f"history:{symbol}:{period}:{interval}", ttl, load)
 
     def get_quote(self, ticker: str) -> Quote:
         """Current quote of an asset, cached for a short time.
