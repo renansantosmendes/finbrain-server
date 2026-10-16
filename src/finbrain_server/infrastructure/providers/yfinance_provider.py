@@ -18,6 +18,7 @@ from finbrain_server.domain.exceptions import (
     AssetNotFoundError,
     UpstreamUnavailableError,
 )
+from finbrain_server.domain.validation import INTRADAY_INTERVALS
 
 
 class YFinanceMarketDataProvider(MarketDataProvider):
@@ -91,6 +92,7 @@ class YFinanceMarketDataProvider(MarketDataProvider):
                     low=round(prices[2], 4),
                     close=round(prices[3], 4),
                     volume=int(volume),
+                    timestamp=index.to_pydatetime() if interval in INTRADAY_INTERVALS else None,
                 )
             )
         return PriceHistory(

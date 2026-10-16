@@ -16,6 +16,9 @@ class PriceBar:
         Prices of the interval.
     volume : int
         Traded volume (0 when the source does not report it).
+    timestamp : datetime | None
+        Start of the candle with its time zone. Set only for intraday
+        intervals, where the day alone does not tell the time.
     """
 
     date: date
@@ -24,6 +27,7 @@ class PriceBar:
     low: float
     close: float
     volume: int = 0
+    timestamp: datetime | None = None
 
 
 @dataclass(frozen=True)

@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     cache_max_entries: int = Field(default=512, ge=16, le=100000)
     cache_ttl_quote: float = Field(default=60, ge=0)
     cache_ttl_history: float = Field(default=900, ge=0)
+    cache_ttl_intraday_history: float = Field(default=60, ge=0)
     cache_ttl_fundamentals: float = Field(default=21600, ge=0)
     cache_ttl_macro: float = Field(default=21600, ge=0)
     cache_ttl_world_bank: float = Field(default=86400, ge=0)
@@ -71,6 +72,7 @@ class Settings(BaseSettings):
         return CachePolicy(
             quote=self.cache_ttl_quote,
             history=self.cache_ttl_history,
+            intraday_history=self.cache_ttl_intraday_history,
             fundamentals=self.cache_ttl_fundamentals,
             macro=self.cache_ttl_macro,
             world_bank=self.cache_ttl_world_bank,

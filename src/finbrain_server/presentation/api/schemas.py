@@ -71,6 +71,11 @@ class PriceBarSchema(ApiModel):
     low: float = Field(description="Lowest price.", examples=[55.1])
     close: float = Field(description="Closing price.", examples=[56.0])
     volume: int = Field(description="Traded volume.", examples=[41250300])
+    timestamp: dt.datetime | None = Field(
+        default=None,
+        description="Start of the candle with its time zone. Only for intraday intervals.",
+        examples=["2026-10-15T10:01:00-03:00"],
+    )
 
     @classmethod
     def build(cls, bar: PriceBar) -> "PriceBarSchema":
